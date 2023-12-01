@@ -1,5 +1,5 @@
-import { dataSource } from '@/dataSource'
-import { Currency } from '@/entity'
+import { dataSource } from '../dataSource'
+import { Currency } from '../entity'
 
 export const CurrencyRepository = dataSource.getRepository(Currency).extend({
 
