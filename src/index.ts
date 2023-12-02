@@ -85,6 +85,7 @@ const yoga = createYoga({
 
 				deals: [ProductDeal]
 				specifics: [ProductSpecific]
+				features: String
 			}
 
 			type ProductDeal {
@@ -178,8 +179,8 @@ const yoga = createYoga({
 
 				specifics: (parent) => {
 					return parent.specifics || []
-				}
-			}
+				},
+			},
 		},
 	}),
 })
