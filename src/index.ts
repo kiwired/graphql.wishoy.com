@@ -57,6 +57,7 @@ const yoga = createYoga({
 			type Category {
 				alias: String!
 				title: String
+				seo: Seo
 				card: CategoryCard
 				parent: Category
 				childs: [Category]
@@ -76,7 +77,7 @@ const yoga = createYoga({
 			type Product {
 				alias: String!
 				title: String
-
+				seo: Seo
 				html: String
 				images: [String]
 				categories: [Category]
@@ -125,23 +126,20 @@ const yoga = createYoga({
 
 			Category: {
 				ancestors: (parent) => {
-					return CategoryRepository.findAncestors(parent)
-						.then((rows) => rows.filter((row) => row.id !== parent.id))
+					return CategoryRepository.findAncestors(parent).then((rows) => rows.filter((row) => row.id !== parent.id))
 				},
 				parent: (parent) => {
-					return CategoryRepository.findAncestors(parent)
-						.then((rows) => {
-							for (const row of rows) {
-								if (parent.id !== row.id) {
-									return row
-								}
+					return CategoryRepository.findAncestors(parent).then((rows) => {
+						for (const row of rows) {
+							if (parent.id !== row.id) {
+								return row
 							}
-							return null
-						})
+						}
+						return null
+					})
 				},
 				childs: (parent) => {
-					return CategoryRepository.findDescendantsTree(parent, { depth: 1 })
-						.then((val) => val.childs)
+					return CategoryRepository.findDescendantsTree(parent, { depth: 1 }).then((val) => val.childs)
 				},
 			},
 		},
