@@ -123,7 +123,20 @@ const yoga = createYoga({
 				},
 
 				product: (_parent, args: { alias: string }) => {
-					return PostProductRepository.findOneBy(args)
+					return PostProductRepository.findOne({
+						where: {
+							alias: args.alias,
+						},
+						relations: {
+							categories: true,
+							reviews: {
+								user: true,
+							},
+							deals: true,
+							specifics: true,
+						},
+						cache: true,
+					})
 				},
 
 				products: (_parent, args) => {
@@ -149,13 +162,6 @@ const yoga = createYoga({
 					return CategoryRepository.findDescendantsTree(parent, { depth: 1 }).then((val) => val.childs)
 				},
 			},
-			
-
-			Product: {
-				specifics: (parent) => {
-					return PostProductSpecificRepository.findBy({ product: { id: parent.id } })
-				},
-			}
 		},
 	}),
 })
