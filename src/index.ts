@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import { createServer } from 'node:http'
 import { createYoga, createSchema, createGraphQLError } from 'graphql-yoga'
 import { dataSource } from './dataSource'
-import { CategoryRepository, PostProductRepository } from './repository'
+import { CategoryRepository, PostProductRepository, PostProductSpecificRepository } from './repository'
 
 const yoga = createYoga({
 	graphqlEndpoint: '/',
@@ -84,6 +84,7 @@ const yoga = createYoga({
 				reviews: [Review]
 
 				deals: [ProductDeal]
+				specifics: [ProductSpecific]
 			}
 
 			type ProductDeal {
@@ -95,6 +96,12 @@ const yoga = createYoga({
 				salePrice: Int
 				saving: Int
 				percent: Int
+			}
+
+			type ProductSpecific {
+				label: String
+				title: String
+				value: String
 			}
 
 			type Query {
@@ -142,6 +149,13 @@ const yoga = createYoga({
 					return CategoryRepository.findDescendantsTree(parent, { depth: 1 }).then((val) => val.childs)
 				},
 			},
+			
+
+			Product: {
+				specifics: (parent) => {
+					return PostProductSpecificRepository.findBy({ product: { id: parent.id } })
+				},
+			}
 		},
 	}),
 })
