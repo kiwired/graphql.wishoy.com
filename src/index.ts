@@ -147,7 +147,7 @@ const yoga = createYoga({
 
 			Category: {
 				ancestors: (parent) => {
-					return CategoryRepository.findAncestors(parent).then((rows) => rows.filter((row) => row.id !== parent.id))
+					return CategoryRepository.findAncestors(parent)
 				},
 				parent: (parent) => {
 					return CategoryRepository.findAncestors(parent).then((rows) => {
