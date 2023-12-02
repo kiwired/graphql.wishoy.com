@@ -100,7 +100,7 @@ const yoga = createYoga({
 			type Query {
 				category(alias: String): Category
 				product(alias: String!): Product
-				products(order: String, skip: Int, take: Int): [Product]
+				products(category: String, sort: String, skip: Int, take: Int): [Product]
 			}
 
 		`,

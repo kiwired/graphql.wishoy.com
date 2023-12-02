@@ -1,6 +1,7 @@
-import { FindOptionsOrder, FindOptionsWhere } from 'typeorm'
+import { FindOptionsOrder, FindOptionsWhere, In, IsNull, Not } from 'typeorm'
 import { dataSource } from '../../dataSource'
 import { Post, PostProduct } from '../../entity'
+import { CategoryRepository } from '../CategoryRepository'
 
 export const PostProductRepository = dataSource.getRepository(PostProduct).extend({
 	async findOrCreate(alias: Post['alias'], data: Partial<PostProduct>) {
@@ -11,60 +12,61 @@ export const PostProductRepository = dataSource.getRepository(PostProduct).exten
 		return fined.save({ data })
 	},
 
-	async findByParams({ order, skip, take }: { order: FindOptionsOrder<PostProduct>; skip: number; take: number }) {
+	async findByParams({ skip, take, ...args }: { category: string; sort: string; skip: number; take: number }) {
 		const filter: FindOptionsWhere<PostProduct> = {}
-		// const order: FindOptionsOrder<PostProduct> = {
-		// 	updatedAt: 'DESC',
-		// }
+		const order: FindOptionsOrder<PostProduct> = {
+			updatedAt: 'DESC',
+		}
 
-		/*const category =
-			req.nextUrl.searchParams.get('category') != 'undefined' ? req.nextUrl.searchParams.get('category') : 'categories'
-
-		if (category) {
-			const cat = await CategoryRepository.findOne({
+		if (args.category) {
+			const category = await CategoryRepository.findOne({
 				where: {
-					alias: category,
+					alias: args.category,
 				},
 				select: ['id'],
 				cache: true,
 			})
 
-			const ancestors = await CategoryRepository.findAncestors(cat)
-			const descendants = await CategoryRepository.findDescendants(cat)
+			if (category) {
+				const ancestors = await CategoryRepository.findAncestors(category)
+				const descendants = await CategoryRepository.findDescendants(category)
 
-			const ids = []
+				const ids = []
 
-			for (const cat of ancestors) {
-				ids[ids.length] = cat.id
+				for (const row of ancestors) ids[ids.length] = row.id
+				for (const row of descendants) ids[ids.length] = row.id
+
+				filter.categories = {
+					id: In(ids),
+				}
 			}
+		}
 
-			for (const cat of descendants) {
-				ids[ids.length] = cat.id
-			}
-
-			filter.categories = {
-				id: In(ids),
-			}
-		}*/
-
-		/*const sort = req.nextUrl.searchParams.get('sort')
-
-		if (sort) {
-			if (sort == 'popularity') {
+		if (args.sort) {
+			const discrict = args.sort.startsWith('-') ? 'DESC' : 'ASC'
+			if (args.sort == 'popularity' || args.sort == '-popularity') {
 				filter.deals = {
 					percent: Not(IsNull()),
 				}
-				// order.updatedAt = 'DESC'
+				// order.updatedAt = discrict
 			}
-			if (sort == 'best-deals') {
+			if (args.sort == 'best-deals' || args.sort == '-best-deals') {
 				filter.deals = {
 					percent: Not(IsNull()),
 				}
 				order.deals = {
-					percent: 'DESC',
+					percent: discrict,
 				}
 			}
-		}*/
+			if (args.sort == 'price' || args.sort == '-price') {
+				filter.deals = {
+					salePrice: Not(IsNull()),
+				}
+				order.deals = {
+					salePrice: discrict,
+				}
+			}
+		}
 
 		return this.find({
 			where: {
@@ -83,9 +85,9 @@ export const PostProductRepository = dataSource.getRepository(PostProduct).exten
 				deals: true,
 			},
 
-			// order: {
-			// 	...order,
-			// },
+			order: {
+				...order,
+			},
 
 			skip: Number(skip || 0),
 			take: Number(take || 12),
