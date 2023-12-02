@@ -162,6 +162,24 @@ const yoga = createYoga({
 					return CategoryRepository.findDescendantsTree(parent, { depth: 1 }).then((val) => val.childs)
 				},
 			},
+
+			Product: {
+				categories: (parent) => {
+					return parent.categories || []
+				},
+
+				reviews: (parent) => {
+					return parent.reviews || []
+				},
+
+				deals: (parent) => {
+					return parent.deals || []
+				},
+
+				specifics: (parent) => {
+					return parent.specifics || []
+				}
+			}
 		},
 	}),
 })
