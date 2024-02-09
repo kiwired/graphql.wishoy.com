@@ -2,7 +2,8 @@ import 'reflect-metadata'
 import { createServer } from 'node:http'
 import { createYoga, createSchema, createGraphQLError } from 'graphql-yoga'
 import { dataSource } from './dataSource'
-import { CategoryRepository, PostProductRepository, PostProductSpecificRepository } from './repository'
+import { CategoryRepository, PostProductRepository } from './repository'
+import { gpt } from 'gpti'
 
 const yoga = createYoga({
 	graphqlEndpoint: '/',
@@ -167,6 +168,35 @@ const yoga = createYoga({
 			Product: {
 				categories: (parent) => {
 					return parent.categories || []
+				},
+
+				html: async (parent) => {
+					if (parent.html) {
+						return parent.html
+					}
+					return new Promise((resolve) => {
+						gpt(
+							{
+								messages: [
+									{
+										role: 'user',
+										// content: `Generate a new title for the product: ${parent.title}`,
+										content: `Generate a description for the product: ${parent.title}\n${parent.features}`,
+									},
+								],
+								markdown: true,
+							},
+							(err, data) => {
+								if (err !== null) {
+									resolve(data.html)
+								}
+								parent.html = data.original || data.gpt
+								parent.save().then(() => {
+									resolve(parent.html)
+								})
+							}
+						)
+					})
 				},
 
 				reviews: (parent) => {
