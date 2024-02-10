@@ -170,6 +170,34 @@ const yoga = createYoga({
 					return parent.categories || []
 				},
 
+				title: async (parent) => {
+					if (parent.html) {
+						return parent.title
+					}
+					// если html еще не генерировали
+					return new Promise((resolve) => {
+						gpt(
+							{
+								messages: [
+									{
+										role: 'user',
+										content: `Generate a new title for the product: ${parent.title}\n${parent.features}`,
+									},
+								],
+							},
+							(err, data) => {
+								if (err !== null) {
+									resolve(data.title)
+								}
+								parent.title = data.gpt
+								parent.save().then(() => {
+									resolve(parent.title)
+								})
+							}
+						)
+					})
+				},
+
 				html: async (parent) => {
 					if (parent.html) {
 						return parent.html
