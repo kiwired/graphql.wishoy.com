@@ -171,7 +171,7 @@ const yoga = createYoga({
 				},
 
 				title: async (parent) => {
-					if (parent.html) {
+					if (parent.html && parent.title.length < 70) {
 						return parent.title
 					}
 					// если html еще не генерировали
@@ -181,7 +181,7 @@ const yoga = createYoga({
 								messages: [
 									{
 										role: 'user',
-										content: `Generate a new title for the product: ${parent.title}\n${parent.features}`,
+										content: `Generate a new title for the product (maximum 70 characters): ${parent.title}\n${parent.features}`,
 									},
 								],
 							},
