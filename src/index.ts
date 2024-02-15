@@ -189,7 +189,7 @@ const yoga = createYoga({
 								if (err !== null) {
 									resolve(data.title)
 								}
-								parent.title = data.gpt
+								parent.title = data.gpt.replace(/^['"]|['"]$/g, '').trim()
 								parent.save().then(() => {
 									resolve(parent.title)
 								})
