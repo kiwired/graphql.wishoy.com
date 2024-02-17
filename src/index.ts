@@ -172,6 +172,10 @@ const yoga = createYoga({
 
 				title: async (parent) => {
 					if (parent.html && parent.title.length < 70) {
+						if (parent.title.startWith('"') || parent.title.startWith('\'')) {
+							parent.title = parent.title.replace(/^['"]|['"]$/g, '').trim()
+							await parent.save()
+						}
 						return parent.title
 					}
 					// если html еще не генерировали
