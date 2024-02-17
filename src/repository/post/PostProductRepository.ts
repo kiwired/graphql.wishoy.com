@@ -50,6 +50,12 @@ export const PostProductRepository = dataSource.getRepository(PostProduct).exten
 				}
 				// order.updatedAt = discrict
 			}
+			if (args.sort == 'recently-bought' || args.sort == '-recently-bought') {
+				filter.deals = {
+					percent: Not(IsNull()),
+				}
+				order.updatedAt = discrict
+			}
 			if (args.sort == 'best-deals' || args.sort == '-best-deals') {
 				filter.deals = {
 					percent: Not(IsNull()),
