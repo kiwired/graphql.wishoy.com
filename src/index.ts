@@ -172,7 +172,7 @@ const yoga = createYoga({
 
 				title: async (parent) => {
 					if (parent.html && parent.title.length < 70) {
-						if (parent.title.startWith('"') || parent.title.startWith('\'')) {
+						if (parent.title.startsWith('"') || parent.title.startsWith('\'')) {
 							parent.title = parent.title.replace(/^['"]|['"]$/g, '').trim()
 							await parent.save()
 						}
@@ -185,12 +185,13 @@ const yoga = createYoga({
 								messages: [
 									{
 										role: 'user',
-										content: `Generate a new title for the product (maximum 70 characters): ${parent.title}\n${parent.features}`,
+										content: `Generate a new title for the product (maximum 50 characters): ${parent.title}\n${parent.features}`,
 									},
 								],
 							},
 							(err, data) => {
 								if (err !== null) {
+									console.error(err)
 									resolve(data.title)
 								}
 								const title = data.gpt.replace(/^['"]|['"]$/g, '').trim()
