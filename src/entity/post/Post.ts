@@ -13,7 +13,7 @@ import {
 	BeforeInsert,
 	OneToMany,
 } from 'typeorm'
-import { Category, Review } from '../../entity'
+import { Image, Category, Review } from '../../entity'
 import { slugify } from '../../utils'
 
 enum PostType {
@@ -58,8 +58,12 @@ export class Post extends BaseEntity {
 		keywords: string
 	}
 
-	@Column('simple-array')
-	images: string[]
+	@Column('simple-array', { nullable: true })
+	images: string[] | null
+
+	@ManyToMany(() => Image)
+	@JoinTable({ name: 'post_image' })
+	imgs: Relation<Image[]>
 
 	@ManyToMany(() => Category)
 	@JoinTable({ name: 'post_category' })

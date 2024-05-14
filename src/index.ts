@@ -10,7 +10,10 @@ const yoga = createYoga({
 	// landingPage: false,
 	context: async (ctx) => {
 		try {
-			await dataSource.initialize()
+
+			if (!dataSource.isInitialized) {
+				await dataSource.initialize()
+			}
 
 			return ctx
 		} catch (error) {

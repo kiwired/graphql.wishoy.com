@@ -8,7 +8,7 @@ export class Category extends BaseEntity {
 	@PrimaryGeneratedColumn({ type: 'bigint' })
 	id: number
 
-	@Column('text', { unique: true })
+	@Column('text', { unique: true, nullable: true })
 	gid: string | null
 
 	@Index()

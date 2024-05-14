@@ -1,6 +1,12 @@
 export * from './User'
 import { User } from './User'
 
+export * from './Image'
+export * from './ImageVector'
+
+import { Image } from './Image'
+import { ImageVector } from './ImageVector'
+
 export * from './Review'
 import { Review } from './Review'
 
@@ -35,6 +41,9 @@ export const entities = [
 	User,
 	Review,
 	Currency,
+
+	Image,
+	ImageVector,
 
 	Category,
 
