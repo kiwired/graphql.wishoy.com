@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from 'typeorm'
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, ManyToOne } from 'typeorm'
 import { Image } from './Image'
 
 @Entity()
@@ -6,7 +6,7 @@ export class ImageVector extends BaseEntity {
 	@PrimaryGeneratedColumn({ type: 'bigint' })
 	id: number
 
-	@OneToOne(() => Image)
+	@ManyToOne(() => Image)
 	@JoinColumn()
 	image: Image
 

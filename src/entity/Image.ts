@@ -1,4 +1,5 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { ImageVector } from './ImageVector'
 
 @Entity()
 export class Image extends BaseEntity {
@@ -7,4 +8,10 @@ export class Image extends BaseEntity {
 
 	@Column()
 	src: string
+
+	@Column()
+	alt: string
+
+	@OneToMany(() => ImageVector, vect => vect.image)
+	vectors: ImageVector[]
 }
