@@ -1,5 +1,8 @@
 export * from './CurrencyRepository'
 
+export * from './ImageRepository'
+export * from './ImageVectorRepository'
+
 export * from './CategoryRepository'
 
 export * from './post/PostRepository'

@@ -1,30 +1,13 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, ManyToOne } from 'typeorm'
-import { Image } from './Image'
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm'
 
-@Entity()
+@Entity({ schema: 'vecs', name: 'image_vectors_512', synchronize: false })
 export class ImageVector extends BaseEntity {
-	@PrimaryGeneratedColumn({ type: 'bigint' })
-	id: number
-
-	@ManyToOne(() => Image)
-	@JoinColumn()
-	image: Image
-
-	@Column('int')
-	score: number
-
-	@Column('int')
-	xMin: number
-
-	@Column('int')
-	yMin: number
-
-	@Column('int')
-	xMax: number
-
-	@Column('int')
-	yMax: number
+	@PrimaryGeneratedColumn()
+	id: string
 
 	@Column('tsvector')
-	vector: string
+	vec: string
+
+	@Column('jsonb')
+	metadata: Record<string, unknown>
 }

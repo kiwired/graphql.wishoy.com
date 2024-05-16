@@ -2,15 +2,16 @@ import 'reflect-metadata'
 import { createServer } from 'node:http'
 import { createYoga, createSchema, createGraphQLError } from 'graphql-yoga'
 import { dataSource } from './dataSource'
-import { CategoryRepository, PostProductRepository } from './repository'
+import { CategoryRepository, PostProductRepository, ImageVectorRepository } from './repository'
 import { gpt } from 'gpti'
+import { In, Like, Not } from 'typeorm'
+import { PostProduct } from './entity'
 
 const yoga = createYoga({
 	graphqlEndpoint: '/',
 	// landingPage: false,
 	context: async (ctx) => {
 		try {
-
 			if (!dataSource.isInitialized) {
 				await dataSource.initialize()
 			}
@@ -90,6 +91,7 @@ const yoga = createYoga({
 				deals: [ProductDeal]
 				specifics: [ProductSpecific]
 				features: String
+				similars: [Product]
 			}
 
 			type ProductDeal {
@@ -139,6 +141,7 @@ const yoga = createYoga({
 							},
 							deals: true,
 							specifics: true,
+							imgs: true
 						},
 						cache: true,
 					})
@@ -175,7 +178,7 @@ const yoga = createYoga({
 
 				title: async (parent) => {
 					if (parent.html && parent.title.length < 70) {
-						if (parent.title.startsWith('"') || parent.title.startsWith('\'')) {
+						if (parent.title.startsWith('"') || parent.title.startsWith("'")) {
 							parent.title = parent.title.replace(/^['"]|['"]$/g, '').trim()
 							await parent.save()
 						}
@@ -249,6 +252,41 @@ const yoga = createYoga({
 
 				specifics: (parent) => {
 					return parent.specifics || []
+				},
+
+				similars: async (parent): Promise<PostProduct[]> => {
+					for await (const image of parent.imgs || []) {
+
+						const key = `box_${image.id}_%`
+
+						const vec = await ImageVectorRepository.findOneBy({
+							id: Like(key),
+						})
+
+						if (!vec) {
+							return []
+						}
+
+						const simmilars = await ImageVectorRepository.createQueryBuilder()
+							.where({
+								id: Not(Like(key)),
+							})
+							.orderBy('vec <-> :vec')
+							.setParameters({ vec: vec.vec })
+							.limit(5)
+							.getMany()
+							.then((rows) => rows.map((row) => row.metadata.imageId))
+
+						return PostProductRepository.find({
+							where: {
+								imgs: {
+									id: In(simmilars),
+								},
+							},
+						})
+					}
+
+					return []
 				},
 			},
 		},
