@@ -283,6 +283,10 @@ const yoga = createYoga({
 									id: In(simmilars),
 								},
 							},
+							relations: {
+								imgs: true,
+								deals: true,
+							},
 						})
 					}
 
