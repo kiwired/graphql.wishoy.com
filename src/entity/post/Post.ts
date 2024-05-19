@@ -61,7 +61,7 @@ export class Post extends BaseEntity {
 	@Column('simple-array', { nullable: true })
 	images: string[] | null
 
-	@ManyToMany(() => Image)
+	@ManyToMany(() => Image, { cascade: true })
 	@JoinTable({ name: 'post_image' })
 	imgs: Relation<Image[]>
 
