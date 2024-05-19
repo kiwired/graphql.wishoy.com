@@ -274,7 +274,7 @@ const yoga = createYoga({
 							})
 							.orderBy('vec <-> :vec')
 							.setParameters({ vec: vec.vec })
-							.take(4)
+							.take(10)
 							.getMany()
 							.then((rows) => rows.map((row) => row.metadata.imageId))
 
@@ -288,6 +288,7 @@ const yoga = createYoga({
 								imgs: true,
 								deals: true,
 							},
+							take: 5,
 						})
 					}
 
