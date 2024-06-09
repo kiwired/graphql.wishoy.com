@@ -233,7 +233,7 @@ const yoga = createYoga({
 								},
 								(err, data) => {
 									if (err !== null) {
-										resolve(data.html)
+										resolve(parent.html)
 									}
 									parent.html = data.original || data.gpt
 									parent.save().then(() => {
