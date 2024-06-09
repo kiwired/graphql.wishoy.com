@@ -219,27 +219,31 @@ const yoga = createYoga({
 						return parent.html
 					}
 					return new Promise((resolve) => {
-						gpt(
-							{
-								messages: [
-									{
-										role: 'user',
-										// content: `Generate a new title for the product: ${parent.title}`,
-										content: `Generate a description for the product: ${parent.title}\n${parent.features}`,
-									},
-								],
-								markdown: true,
-							},
-							(err, data) => {
-								if (err !== null) {
-									resolve(data.html)
+						try {
+							gpt(
+								{
+									messages: [
+										{
+											role: 'user',
+											// content: `Generate a new title for the product: ${parent.title}`,
+											content: `Generate a description for the product: ${parent.title}\n${parent.features}`,
+										},
+									],
+									markdown: true,
+								},
+								(err, data) => {
+									if (err !== null) {
+										resolve(data.html)
+									}
+									parent.html = data.original || data.gpt
+									parent.save().then(() => {
+										resolve(parent.html)
+									})
 								}
-								parent.html = data.original || data.gpt
-								parent.save().then(() => {
-									resolve(parent.html)
-								})
-							}
-						)
+							)
+						} catch (err) {
+							resolve(parent.html)
+						}
 					})
 				},
 
